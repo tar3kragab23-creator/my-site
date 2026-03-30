@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مولد التقارير المدرسية</title>
+
+<!-- مكتبة محرر النصوص -->
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+<!-- مكتبة تحويل HTML إلى PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+    body {
+        font-family: "Tahoma", sans-serif;
+        background: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+    }
+    #editor-container {
+        width: 80%;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+    }
+    #buttons {
+        margin: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+</style>
+</head>
+
+<body>
+
+<h2>مولد التقارير والكشوف المدرسية</h2>
+
+<div id="buttons">
+    <button onclick="saveDesign()">💾 حفظ التصميم</button>
+    <button onclick="loadDesign()">📂 تحميل تصميم سابق</button>
+    <button onclick="downloadPDF()">📄 تحميل PDF</button>
+</div>
+
+<div id="editor-container">
+    <textarea id="editor">
+        <h1 style="text-align:center;">تقرير مدرسي</h1>
+        <p>اكتب هنا تفاصيل التقرير ...</p>
+    </textarea>
+</div>
+
+<script>
+    // تشغيل محرر النصوص
+    CKEDITOR.replace('editor');
+
+    // حفظ التصميم في المتصفح
+    function saveDesign() {
+        const data = CKEDITOR.instances.editor.getData();
+        localStorage.setItem("school_report_design", data);
+        alert("✔ تم حفظ التصميم بنجاح");
+    }
+
+    // تحميل تصميم محفوظ
+    function loadDesign() {
+        const saved = localStorage.getItem("school_report_design");
+        if (saved) {
+            CKEDITOR.instances.editor.setData(saved);
+            alert("✔ تم تحميل التصميم");
+        } else {
+            alert("❗ لا يوجد تصميم محفوظ");
+        }
+    }
+
+    // تحويل المحتوى إلى PDF
+    function downloadPDF() {
+        const element = document.createElement("div");
+        element.innerHTML = CKEDITOR.instances.editor.getData();
+
+        html2pdf().from(element).set({
+            margin: 10,
+            filename: 'report.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).save();
+    }
+</script>
+
+</body>
+</html>
